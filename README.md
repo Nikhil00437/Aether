@@ -1,7 +1,7 @@
 # 🌌 Aether Music Player
 
-![Aether Music Player Main Dashboard](./assets/screenshots/dashboard_showcase.png)
-*Placeholder: Replace with a screenshot of your main player layout showing the glassmorphism dashboard, dynamic theme, and visualizer.*
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/61fd3c83-8f9a-4ff3-89e5-e18e15b41254" />
+
 
 Aether is a premium, high-fidelity web-based music player built with React and Vite. It combines professional-grade audio features—such as crossfading, parametric equalization, reverb convolution, and volume normalization—with a playful, visually stunning cyber-aesthetic featuring an interactive Chibi companion, retro scratch vinyl deck, and real-time canvas visualizers.
 
@@ -18,8 +18,6 @@ Aether is a premium, high-fidelity web-based music player built with React and V
 * **Sleep Timer**: Schedule playback cutoff with a smooth volume fade-out.
 
 ### 🎮 2. Interactive Chibi Companion ("Aethy")
-![Aethy Mascot & Tab Teleporting](./assets/screenshots/chibi_teleport_demo.gif)
-*Placeholder: Replace with an animated GIF of Aethy teleporting through portals when switching tabs in the sidebar.*
 
 * **Interactive mascot**: Aethy sits in the sidebar, tracking your active tab. When you navigate to a new section, Aethy teleports via a spinning neon portal and lands on the new tab icon.
 * **Aethy's Habitat Room**: Enter Aethy's Room view to see Aethy headbang in sync with the beats when music is playing, or float into a deep sleep with drifting `"Zzz"` bubbles when idle.
@@ -29,8 +27,6 @@ Aether is a premium, high-fidelity web-based music player built with React and V
   * **Floating Synth Deck** (unlocked after 15 minutes of total listening time)
 
 ### 💿 3. Retro Vinyl Scratch Deck
-![Vinyl Record Scratch & Seek](./assets/screenshots/vinyl_scratch_demo.gif)
-*Placeholder: Replace with an animated GIF showing manual vinyl grabbing, spinning, scratching, and the tonearm needle pivoting.*
 
 * Rendered on the home screen, this simulated turntable displays the album art of the currently playing song on the center spindle.
 * **Drag-to-Scratch**: Grab and spin the record with your mouse to scratch and manually seek through the audio timeline in real time.
@@ -41,8 +37,6 @@ Aether is a premium, high-fidelity web-based music player built with React and V
 * Alternatively, the **Auto Mood Ring** analyzes the live frequency spectrum (low-end bass vs high-end treble) to switch themes dynamically to match the mood of the music.
 
 ### 🎤 5. Kinetic Karaoke Synced Lyrics
-![Bouncing Ball Synced Lyrics](./assets/screenshots/lyrics_bouncing_ball_demo.gif)
-*Placeholder: Replace with a screenshot or GIF of the word-by-word highlighted text and the glowing bouncing ball jumping between words.*
 
 * Loads synchronized `.lrc` and plain-text lyrics from online databases (via LRCLib) and prefetches them for upcoming tracks.
 * **Bouncing Ball Animation**: Splits lyrics word-by-word and moves a glowing ball in a physics-based parabolic bounce from word to word as they are sung.
