@@ -1,0 +1,973 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-main: #070709;
+  --bg-panel: rgba(18, 18, 22, 0.65);
+  --bg-sidebar: #0b0b0e;
+  --bg-player: rgba(15, 15, 18, 0.85);
+  --border-color: rgba(255, 255, 255, 0.06);
+  --border-color-hover: rgba(255, 255, 255, 0.15);
+  
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0aa;
+  --text-muted: #71717a;
+  
+  --accent-primary: #06b6d4;      /* Cyan */
+  --accent-primary-rgb: 6, 182, 212;
+  --accent-secondary: #6366f1;    /* Indigo */
+  --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #6366f1 100%);
+  --accent-glow: 0 0 20px rgba(6, 182, 212, 0.3);
+  --beat-intensity: 0;
+  
+  --font-family: 'Outfit', sans-serif;
+  --sidebar-width: 260px;
+  --player-height: 90px;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100vh;
+  position: relative;
+}
+
+/* Ambient Glowing Background Blobs */
+.ambient-blob {
+  position: absolute;
+  width: 550px;
+  height: 550px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-primary) 0%, rgba(99, 102, 241, 0.02) 45%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(110px);
+  z-index: -1;
+  pointer-events: none;
+  transition: transform 0.12s cubic-bezier(0.215, 0.61, 0.355, 1), opacity 0.15s ease-out;
+}
+
+.blob-1 {
+  top: -120px;
+  left: -120px;
+}
+
+.blob-2 {
+  bottom: -180px;
+  right: -120px;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Utility Animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.5));
+  }
+}
+
+@keyframes bounceBar {
+  0%, 100% {
+    transform: scaleY(0.15);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: var(--bg-panel);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+/* Main Layout Grid */
+.app-container {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-rows: calc(100vh - var(--player-height)) var(--player-height);
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--bg-main);
+  overflow: hidden;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  grid-column: 1;
+  grid-row: 1;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid rgba(var(--accent-primary-rgb), calc(0.04 + var(--beat-intensity) * 0.08)) !important;
+  transition: border-color 0.12s ease-out;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Main View Styling */
+.main-view {
+  grid-column: 2;
+  grid-row: 1;
+  overflow-y: auto;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, rgba(7, 7, 9, 0) 400px);
+  position: relative;
+}
+
+/* Player Bar Styling */
+.player-bar {
+  grid-column: 1 / span 2;
+  grid-row: 2;
+  background-color: var(--bg-player);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-top: 1px solid var(--border-color);
+  display: grid;
+  grid-template-columns: 30% 40% 30%;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+/* Custom Slider Styling */
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.custom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition-smooth);
+}
+
+.custom-slider:hover {
+  height: 6px;
+}
+
+.custom-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+}
+
+.custom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  margin-top: -3px; /* Centered on 4px track: (4px - 10px)/2 */
+  transition: var(--transition-smooth);
+  opacity: 0.85;
+  box-shadow: 0 1.5px 3px rgba(0,0,0,0.5);
+}
+
+.custom-slider:hover::-webkit-slider-thumb {
+  opacity: 1;
+  width: 12px;
+  height: 12px;
+  margin-top: -4px; /* Centered on 4px track: (4px - 12px)/2 */
+  box-shadow: 0 0 8px var(--accent-primary), 0 0 3px #fff;
+}
+
+.custom-slider::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition-smooth);
+  opacity: 0.85;
+  box-shadow: 0 1.5px 3px rgba(0,0,0,0.5);
+}
+
+.custom-slider:hover::-moz-range-thumb {
+  opacity: 1;
+  width: 12px;
+  height: 12px;
+  box-shadow: 0 0 8px var(--accent-primary), 0 0 3px #fff;
+}
+
+/* Active Fill on Range Slider */
+.slider-fill-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.slider-track-fill {
+  position: absolute;
+  height: 100%;
+  background: var(--accent-gradient);
+  border-radius: 2px;
+  pointer-events: none;
+  left: 0;
+  transition: height 0.1s ease, box-shadow 0.2s ease;
+}
+
+.custom-slider:hover + .slider-track-fill {
+  height: 100%;
+  box-shadow: 0 0 6px var(--accent-primary);
+}
+
+/* Song Card Component */
+.song-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.song-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-color-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.song-card-image {
+  aspect-ratio: 1;
+  width: 100%;
+  border-radius: 6px;
+  margin-bottom: 14px;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.song-card-play-btn {
+  position: absolute;
+  right: 24px;
+  top: calc(100% - 75px);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: var(--accent-glow);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: var(--transition-smooth);
+}
+
+.song-card:hover .song-card-play-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.song-card-play-btn:hover {
+  transform: scale(1.08);
+}
+
+/* Typography Helpers */
+.title-large {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.title-medium {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.text-small {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.text-semibold {
+  font-weight: 500;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+  border-radius: 50%;
+}
+
+.icon-btn:hover {
+  color: var(--text-primary);
+  transform: scale(1.05);
+}
+
+.icon-btn.active {
+  color: var(--accent-primary);
+  filter: drop-shadow(0 0 5px rgba(6, 182, 212, 0.4));
+}
+
+/* Smooth tab switching animation */
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.main-view-animate {
+  animation: fadeInContent 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Custom quick card hover elevation */
+.quick-card {
+  transition: var(--transition-smooth) !important;
+}
+.quick-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Toast popup slide-up keyframe */
+@keyframes slideUpToast {
+  from {
+    transform: translate(-50%, 20px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+/* Modal scale-up keyframe */
+@keyframes modalScaleUp {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Modal input styling details */
+.modal-input:focus {
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+}
+
+.btn-cancel:hover {
+  border-color: var(--border-color-hover) !important;
+  color: var(--text-primary) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Scribble Button Hover & Active States */
+.scribble-btn {
+  transition: var(--transition-smooth) !important;
+}
+
+.scribble-btn:hover {
+  color: var(--accent-primary) !important;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.15);
+}
+
+.scribble-btn:hover .scribble-icon-inner {
+  transform: rotate(15deg) scale(1.1);
+}
+
+.scribble-icon-inner {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Keyframes for drawing squiggle/scribble animation */
+@keyframes scribbleDraw {
+  0% { transform: rotate(0deg) scale(1); }
+  15% { transform: rotate(-25deg) scale(1.25); filter: drop-shadow(0 0 6px var(--accent-primary)); }
+  30% { transform: rotate(25deg) scale(1.25); filter: drop-shadow(0 0 10px var(--accent-primary)); }
+  45% { transform: rotate(-25deg) scale(1.25); filter: drop-shadow(0 0 6px var(--accent-primary)); }
+  60% { transform: rotate(25deg) scale(1.25); filter: drop-shadow(0 0 10px var(--accent-primary)); }
+  75% { transform: rotate(-15deg) scale(1.15); }
+  90% { transform: rotate(10deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+.scribble-animate {
+  animation: scribbleDraw 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Keyframes for input glow pulse and pop */
+@keyframes inputGlowPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(6, 182, 212, 0);
+    border-color: var(--border-color);
+  }
+  25% {
+    box-shadow: 0 0 15px 3px rgba(6, 182, 212, 0.35);
+    border-color: var(--accent-primary);
+    background: rgba(6, 182, 212, 0.04);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(6, 182, 212, 0);
+    border-color: var(--border-color);
+  }
+}
+
+@keyframes inputPop {
+  0% {
+    transform: scale(0.98);
+  }
+  50% {
+    transform: scale(1.015);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.input-pulse-glow {
+  animation: inputGlowPulse 0.7s ease-in-out forwards;
+}
+
+.input-pop {
+  animation: inputPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Sidebar entrance slide-in */
+@keyframes sidebarSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.sidebar {
+  animation: sidebarSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Nav Item Button Improvements */
+.nav-item-btn {
+  transition: padding-left 0.25s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.nav-item-btn:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--text-primary) !important;
+  padding-left: 18px !important;
+}
+
+.nav-item-btn.active-nav-btn {
+  background: linear-gradient(90deg, rgba(6, 182, 212, 0.06) 0%, rgba(99, 102, 241, 0.02) 100%) !important;
+  border: 1px solid rgba(6, 182, 212, 0.12) !important;
+  box-shadow: inset 0 0 10px rgba(6, 182, 212, 0.03);
+}
+
+.nav-item-btn svg.active-icon {
+  animation: pulseIcon 2s infinite ease-in-out;
+}
+
+@keyframes pulseIcon {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px rgba(6, 182, 212, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.7));
+  }
+}
+
+/* Welcome Card Premium Design */
+.welcome-card {
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.08) 0%, rgba(99, 102, 241, 0.05) 50%, rgba(7, 7, 9, 0.6) 100%) !important;
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 16px !important;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 0 12px rgba(255, 255, 255, 0.02);
+  transition: var(--transition-smooth);
+}
+
+.welcome-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, rgba(99, 102, 241, 0) 60%);
+  animation: rotateMesh 18s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes rotateMesh {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.welcome-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Staggered Row Cascade entry */
+@keyframes slideInRow {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.staggered-row {
+  animation: slideInRow 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Hover song-row styling */
+.song-row {
+  position: relative;
+  border-left: 3px solid transparent;
+  transition: border-color 0.25s ease, background-color 0.2s ease, padding-left 0.25s ease !important;
+}
+
+.song-row:hover {
+  background-color: rgba(255, 255, 255, 0.035) !important;
+  border-left-color: var(--accent-primary) !important;
+}
+
+/* Premium Play buttons inside Player Bar */
+.player-play-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #000000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background-color 0.2s ease !important;
+}
+
+.player-play-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.45);
+  background-color: #f3f4f6;
+}
+
+.player-play-btn:active {
+  transform: scale(0.92);
+}
+
+.icon-btn:active {
+  transform: scale(0.9);
+}
+
+/* Custom Bouncing EQ Visualizer */
+.player-eq-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 16px;
+  margin-right: 12px;
+}
+
+.eq-bar {
+  width: 3px;
+  height: 100%;
+  background: var(--accent-gradient);
+  border-radius: 2px;
+  transform-origin: bottom;
+  box-shadow: 0 0 4px rgba(6, 182, 212, 0.4);
+}
+
+.eq-bar:nth-child(1) { animation: bounceBar 0.8s ease-in-out infinite alternate; }
+.eq-bar:nth-child(2) { animation: bounceBar 0.5s ease-in-out infinite alternate-reverse; }
+.eq-bar:nth-child(3) { animation: bounceBar 0.75s ease-in-out infinite alternate; }
+.eq-bar:nth-child(4) { animation: bounceBar 0.6s ease-in-out infinite alternate-reverse; }
+.eq-bar:nth-child(5) { animation: bounceBar 0.9s ease-in-out infinite alternate; }
+.eq-bar:nth-child(6) { animation: bounceBar 0.7s ease-in-out infinite alternate-reverse; }
+
+@keyframes bounceBar {
+  0% {
+    transform: scaleY(0.15);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+/* Floating player bar styling */
+.player-bar {
+  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.player-bar::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--accent-primary-rgb), calc(0.2 + var(--beat-intensity) * 0.45)) 30%, rgba(99, 102, 241, calc(0.12 + var(--beat-intensity) * 0.35)) 70%, transparent);
+  pointer-events: none;
+  transition: background 0.12s ease-out;
+  will-change: background;
+}
+
+/* Song card improvements */
+.song-card {
+  background: rgba(255, 255, 255, 0.012) !important;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              background-color 0.3s ease, 
+              border-color 0.3s ease, 
+              box-shadow 0.3s ease !important;
+}
+
+.song-card:hover {
+  background: rgba(255, 255, 255, 0.045) !important;
+  border-color: rgba(6, 182, 212, 0.35) !important;
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45), 0 0 15px rgba(6, 182, 212, 0.15) !important;
+}
+
+.song-card-image {
+  transition: transform 0.4s ease !important;
+}
+
+.song-card:hover .song-card-image {
+  transform: scale(1.04);
+}
+
+/* Right Drawer Slide-out Panel */
+.right-drawer {
+  position: fixed;
+  top: 0;
+  right: -380px;
+  width: 380px;
+  height: calc(100vh - var(--player-height));
+  background: rgba(10, 10, 12, 0.82);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-left: 1px solid var(--border-color);
+  box-shadow: -10px 0 35px rgba(0, 0, 0, 0.6);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.right-drawer.open {
+  right: 0;
+}
+
+/* Keyboard Shortcut Key Cap Styles */
+.kbd-guide-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.kbd-shortcut-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  transition: var(--transition-smooth);
+}
+
+.kbd-shortcut-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(6, 182, 212, 0.2);
+}
+
+.kbd-key-cap {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 5px;
+  padding: 3px 8px;
+  font-family: var(--font-family);
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  display: inline-block;
+  min-width: 24px;
+  text-align: center;
+}
+
+.lyric-line-hover:hover {
+  color: var(--accent-primary) !important;
+  text-shadow: 0 0 8px rgba(6, 182, 212, 0.25);
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Spinner Animation */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* GPU-Accelerated Beat Syncing Helper Classes */
+.beat-pulse-scale {
+  transform: scale(calc(1 + var(--beat-intensity) * 0.035)) !important;
+  will-change: transform;
+}
+
+.beat-pulse-border {
+  border-color: rgba(var(--accent-primary-rgb), calc(0.1 + var(--beat-intensity) * 0.4)) !important;
+  will-change: border-color;
+}
+
+.beat-pulse-glow {
+  box-shadow: 0 0 calc(6px + var(--beat-intensity) * 18px) rgba(var(--accent-primary-rgb), calc(0.12 + var(--beat-intensity) * 0.35)) !important;
+  will-change: box-shadow;
+}
+
+/* GPU Hardware-Acceleration will-change Allocations */
+.ambient-blob {
+  will-change: transform, opacity;
+}
+
+.song-card {
+  will-change: transform, border-color, box-shadow;
+}
+
+.song-row {
+  will-change: background-color, border-color, padding-left;
+}
+
+.right-drawer {
+  will-change: right;
+}
+
+.custom-slider {
+  will-change: height;
+}
+
+.slider-track-fill {
+  will-change: width, box-shadow;
+}
+
+.player-play-btn {
+  will-change: transform, box-shadow;
+}
+
+/* Image Load Smooth Transitions */
+img {
+  opacity: 0;
+  animation: fadeInImg 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: opacity;
+}
+
+@keyframes fadeInImg {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Aether Portal Slide Transitions */
+.tab-transition-enter {
+  animation: slideInTab 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity, filter;
+  width: 100%;
+}
+
+@keyframes slideInTab {
+  0% {
+    opacity: 0;
+    transform: translate3d(24px, 0, 0) scale(0.985);
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* 3D Perspective Card Entry Row Cascade */
+@keyframes slideInRow3D {
+  0% {
+    opacity: 0;
+    transform: perspective(600px) rotateX(-12deg) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(600px) rotateX(0deg) translateY(0);
+  }
+}
+
+.staggered-row-3d {
+  animation: slideInRow3D 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+.staggered-row-3d:nth-child(1) { animation-delay: 30ms; }
+.staggered-row-3d:nth-child(2) { animation-delay: 60ms; }
+.staggered-row-3d:nth-child(3) { animation-delay: 90ms; }
+.staggered-row-3d:nth-child(4) { animation-delay: 120ms; }
+.staggered-row-3d:nth-child(5) { animation-delay: 150ms; }
+.staggered-row-3d:nth-child(6) { animation-delay: 180ms; }
+.staggered-row-3d:nth-child(7) { animation-delay: 210ms; }
+.staggered-row-3d:nth-child(8) { animation-delay: 240ms; }
+.staggered-row-3d:nth-child(9) { animation-delay: 270ms; }
+.staggered-row-3d:nth-child(10) { animation-delay: 300ms; }
+
+/* Custom Waveform Progress Seek Bar & Tooltips */
+.waveform-container {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.waveform-bar {
+  flex-grow: 1;
+  background-color: rgba(255, 255, 255, 0.15);
+  transition: background-color 0.12s ease, transform 0.1s ease;
+}
+
+.waveform-container:hover .waveform-bar {
+  transform: scaleY(1.22);
+}
+
+.waveform-bar.active {
+  background: var(--accent-gradient) !important;
+  box-shadow: 0 0 6px rgba(var(--accent-primary-rgb), 0.5);
+}
+
+.waveform-tooltip {
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  transition: opacity 0.15s ease-out, transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: tooltipScaleUp 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes tooltipScaleUp {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.85) translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) translateY(0);
+  }
+}
+
+/* Elastic spring transitions on all active press controls */
+.icon-btn, .player-play-btn, .song-card-play-btn, .scribble-btn {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease, color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.icon-btn:active, .player-play-btn:active, .song-card-play-btn:active, .scribble-btn:active {
+  transform: scale(0.9) !important;
+  transition: transform 0.08s ease-out !important;
+}
+
+/* Ensure smooth styling for the circle cover art halo Visualizer */
+.beat-pulse-scale {
+  will-change: transform;
+  transition: transform 0.1s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.beat-pulse-glow {
+  will-change: box-shadow;
+  transition: box-shadow 0.1s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+/* Smooth fade-in and scale up animations for components */
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
